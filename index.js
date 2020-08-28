@@ -131,7 +131,7 @@ if(message.content == ',명령어') {
 
 
 
-  if(message.content.startsWith(',printfasfores')) {
+  if(message.content.startsWith(',losernoob')) {
     if(checkPermission(message)) return
     if(message.member != null) { // 채널에서 공지 쓸 때
       let contents = message.content.slice(',전체공지'.length);
