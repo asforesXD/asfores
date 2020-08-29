@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const token = process.env.token;
+const token = 'NzQzNjk5MTE0NTUzNzcwMDE0.XzYdxg.2u10NPzeFrRtSPGhZEbxQEzp_uM';
 const welcomeChannelName = "이근-ㅎㅇ";
 const byeChannelName = "이근-ㅂㅇ";
 const welcomeChannelComment = "ㅎㅇ ";
@@ -8,7 +8,7 @@ const byeChannelComment = "ㅂㅂ";
 
 client.on('ready', () => {
   console.log('켰다.');
-  client.user.setActivity('MUSAT 특별과정/전농 helping', { type: 'PLAYING' })
+  client.user.setActivity('MUSAT 특별과정', { type: 'PLAYING' })
 });
 
 client.on("guildMemberAdd", (member) => {
@@ -125,7 +125,70 @@ if(message.content == ',마승현') {
 if(message.content == ',명령어') {
   return message.reply('');
 }
+if(message.content == ',업데이트확인') {
+  return message.reply('vrs 1');
+}
+if(message.content.startsWith(',청소')) {
+  if(message.channel.type == 'dm') {
+    return message.reply('dm에서 사용할 수 없는 명령어 입니다.');
+  }
+  
+  if(message.channel.type != 'dm' && checkPermission(message)) return
 
+  var clearLine = message.content.slice(',청소 '.length);
+  var isNum = !isNaN(clearLine)
+
+  if(isNum && (clearLine <= 0 || 100 < clearLine)) {
+    message.channel.send("1부터 100까지의 숫자만 입력해주세요.")
+    return;
+  } else if(!isNum) { 
+    if(message.content.split('<@').length == 2) {
+      if(isNaN(message.content.split(' ')[2])) return;
+
+      var user = message.content.split(' ')[1].split('<@!')[1].split('>')[0];
+      var count = parseInt(message.content.split(' ')[2])+1;
+      let _cnt = 0;
+
+      message.channel.fetchMessages().then(collected => {
+        collected.every(msg => {
+          if(msg.author.id == user) {
+            msg.delete();
+            ++_cnt;
+          }
+          return !(_cnt == count);
+        });
+      });
+    }
+  } else {
+    message.channel.bulkDelete(parseInt(clearLine)+1)
+      .then(() => {
+        AutoMsgDelete(message, `<@${message.author.id}> ` + parseInt(clearLine) + "개의 메시지를 삭제했습니다. (이 메세지는 잠시 후에 사라집니다.)");
+      })
+      .catch(console.error)
+  }
+}
+if(message.content.startsWith(',losernoob2')) {
+  if(checkPermission(message)) return
+  if(message.member != null) { // 채널에서 공지 쓸 때
+    let contents = message.content.slice(',losernoob2'.length);
+    let embed = new Discord.RichEmbed()
+      .setAuthor('공지 of 이근대위')
+      .setColor('#186de6')
+      .setFooter(`이근 대위`)
+      .setTimestamp()
+
+    embed.addField('공지: ', contents);
+
+    message.member.guild.members.array().forEach(x => {
+      if(x.user.bot) return;
+      x.user.send(embed)
+    });
+
+    return message.reply('공지를 전송했습니다.');
+  } else {
+    return message.reply('채널에서 실행해주세요.');
+  }
+}
 
  
 
